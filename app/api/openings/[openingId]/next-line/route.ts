@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getUserFromToken } from '@/lib/auth'
 import { Chess } from 'chess.js'
+import type { Prisma } from '@prisma/client'
 
 export async function GET(
   request: NextRequest,
@@ -78,12 +79,15 @@ export async function GET(
     console.log(`Found ${rootNodes.length} root nodes`)
 
     // Build continuation from a node following main line
+    type MoveNodeWithFirstChild = Prisma.MoveNodeGetPayload<{
+      include: { childNodes: { select: { id: true; sanMove: true } } }
+    }>
     const buildContinuationFromNode = async (nodeId: string): Promise<string[]> => {
       const continuation: string[] = []
       let currentNodeId: string | null = nodeId
 
       while (currentNodeId) {
-        const node = await prisma.moveNode.findUnique({
+        const node: MoveNodeWithFirstChild | null = await prisma.moveNode.findUnique({
           where: { id: currentNodeId },
           include: {
             childNodes: {
