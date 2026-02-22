@@ -19,7 +19,7 @@
     "fetch-shop-assets": "tsx scripts/fetch-shop-assets.ts",
     "cleanup-cosmetics": "tsx scripts/cleanup-missing-cosmetics.ts",
     "seed-all-openings": "tsx scripts/seed-all-openings.ts",
-    "postinstall": "node scripts/copy-stockfish.js"
+    "postinstall": "node scripts/copy-stockfish.js && prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.38.1",
