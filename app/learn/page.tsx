@@ -1,3 +1,5 @@
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { Suspense } from 'react'
 import SearchBar from '@/components/SearchBar'
@@ -202,6 +204,8 @@ function Pagination({ currentPage, totalPages, searchTerm }: { currentPage: numb
 }
 
 export default async function LearnPage({ searchParams }: PageProps) {
+  const { userId } = await auth()
+  if (!userId) redirect('/login')
   const searchTerm = searchParams.q
   const page = parseInt(searchParams.page || '1', 10)
   const validPage = page > 0 ? page : 1

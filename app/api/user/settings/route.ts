@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import { getUserFromToken } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth()
+    if (!userId) return new NextResponse('Unauthorized', { status: 401 })
+
     const token = request.cookies.get('auth-token')?.value
 
     if (!token) {

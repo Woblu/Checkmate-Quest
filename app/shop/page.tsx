@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -58,6 +59,8 @@ async function getShopData() {
 }
 
 export default async function ShopPage() {
+  const { userId } = await auth()
+  if (!userId) redirect('/login')
   const { user, cosmetics, ownershipMap } = await getShopData()
 
   const boardCosmetics = cosmetics.filter((c) => c.type === 'BOARD')

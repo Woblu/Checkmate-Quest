@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { GameResult } from '@prisma/client'
 import { getUserFromToken } from '@/lib/auth'
@@ -10,6 +11,9 @@ import { processGameResult } from '@/lib/ranking'
  */
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth()
+    if (!userId) return new NextResponse('Unauthorized', { status: 401 })
+
     const token = request.cookies.get('auth-token')?.value
 
     if (!token) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
@@ -6,6 +7,9 @@ export async function GET(
   { params }: { params: { clerkId: string } }
 ) {
   try {
+    const { userId } = await auth()
+    if (!userId) return new NextResponse('Unauthorized', { status: 401 })
+
     const idOrClerkId = params.clerkId
     const user = await prisma.user.findFirst({
       where: {

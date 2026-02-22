@@ -5,6 +5,9 @@ import { getUserFromToken } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth()
+    if (!userId) return new NextResponse('Unauthorized', { status: 401 })
+
     let user = null
     const token = request.cookies.get('auth-token')?.value
     if (token) {

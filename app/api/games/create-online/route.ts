@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 // Create an online game without a result (for real-time play)
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await auth()
+    if (!userId) return new NextResponse('Unauthorized', { status: 401 })
+
     const { whitePlayerId, blackPlayerId } = await request.json()
 
     if (!whitePlayerId || !blackPlayerId) {
