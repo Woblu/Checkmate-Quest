@@ -1,0 +1,311 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String         @id @default(cuid())
+  clerk_id              String?        @unique // Clerk OAuth; null for email/password users
+  name                  String
+  email                 String         @unique
+  password              String?        // hashed; only for email/password users (Clerk users leave null)
+  rank                  String         @default("Beginner")
+  currentPoints         Float          @default(0)
+  gamesPlayedInCycle    Int            @default(0)
+  totalGames            Int            @default(0)
+  pieceSet              String         @default("caliente")
+  boardStyle            String         @default("canvas2")
+  pawns                 Int            @default(0)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  whiteGames            Game[]         @relation("WhitePlayer")
+  blackGames            Game[]         @relation("BlackPlayer")
+  progress              UserProgress[]
+  cosmetics             UserCosmetic[]
+  campaignProgress      UserCampaignProgress[]
+  tourProgress          UserTourProgress?
+  friends               User[]         @relation("UserFriends")
+  symmetricFriends      User[]         @relation("UserFriends")
+  sentMessages          Message[]      @relation("SentMessages")
+  receivedMessages     Message[]      @relation("ReceivedMessages")
+  questProgress         UserQuestProgress[]
+  achievements          UserAchievement[]
+
+  @@map("users")
+}
+
+model Game {
+  id            String     @id @default(cuid())
+  whitePlayerId String
+  blackPlayerId String
+  result        GameResult?
+  isOnline      Boolean    @default(false)
+  date          DateTime   @default(now())
+
+  whitePlayer   User      @relation("WhitePlayer", fields: [whitePlayerId], references: [id])
+  blackPlayer   User      @relation("BlackPlayer", fields: [blackPlayerId], references: [id])
+
+  @@map("games")
+}
+
+enum GameResult {
+  WHITE_WIN
+  BLACK_WIN
+  DRAW
+}
+
+model Opening {
+  id        String      @id @default(cuid())
+  name      String
+  ecoCode   String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  moveNodes MoveNode[]
+
+  @@unique([ecoCode])
+  @@map("openings")
+}
+
+model MoveNode {
+  id              String        @id @default(cuid())
+  openingId       String
+  fen             String
+  uciMove         String
+  sanMove         String
+  parentNodeId    String?
+  popularityScore Int           @default(0)
+  isMainLine      Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+
+  opening         Opening       @relation(fields: [openingId], references: [id], onDelete: Cascade)
+  parentNode      MoveNode?     @relation("MoveNodeTree", fields: [parentNodeId], references: [id])
+  childNodes      MoveNode[]    @relation("MoveNodeTree")
+  userProgress    UserProgress[]
+
+  @@index([openingId])
+  @@index([parentNodeId])
+  @@index([fen])
+  @@map("move_nodes")
+}
+
+model UserProgress {
+  id         String    @id @default(cuid())
+  userId     String
+  moveNodeId String
+  isLearned  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moveNode   MoveNode  @relation(fields: [moveNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moveNodeId])
+  @@index([userId])
+  @@index([moveNodeId])
+  @@map("user_progress")
+}
+
+enum CosmeticType {
+  BOARD
+  PIECES
+}
+
+model Cosmetic {
+  id        String         @id @default(cuid())
+  name      String
+  type      CosmeticType
+  price     Int
+  asset_url String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  users     UserCosmetic[]
+
+  @@map("cosmetics")
+}
+
+model UserCosmetic {
+  id          String    @id @default(cuid())
+  userId      String
+  cosmeticId  String
+  isEquipped  Boolean   @default(false)
+  purchasedAt DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cosmetic    Cosmetic  @relation(fields: [cosmeticId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cosmeticId])
+  @@map("user_cosmetics")
+}
+
+model CampaignNode {
+  id            String    @id @default(cuid())
+  order         Int       @unique
+  bossName      String
+  bossElo       Int
+  bossAvatarUrl String
+  pawnReward    Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  progress      UserCampaignProgress[]
+
+  @@map("campaign_nodes")
+}
+
+model UserCampaignProgress {
+  id          String        @id @default(cuid())
+  userId      String
+  nodeId      String
+  starsEarned Int           @default(0) // 0-3 stars
+  completedAt DateTime?
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  node        CampaignNode  @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, nodeId])
+  @@map("user_campaign_progress")
+}
+
+model Region {
+  id        String           @id @default(cuid())
+  name      String
+  order     Int              @unique
+  longitude Float            // Longitude coordinate for map positioning
+  latitude  Float            // Latitude coordinate for map positioning
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  tournaments TournamentNode[]
+  tourProgress UserTourProgress[]
+
+  @@map("regions")
+}
+
+model TournamentNode {
+  id            String    @id @default(cuid())
+  regionId      String
+  roundName     String    // e.g., 'Quarter-Final', 'Semi-Final', 'Final'
+  botName       String
+  botElo        Int
+  botAvatarUrl  String
+  pawnReward    Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  region        Region    @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@index([regionId])
+  @@map("tournament_nodes")
+}
+
+model UserTourProgress {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  currentRegionId     String?
+  highestRoundCleared String?   // e.g., 'Quarter-Final', 'Semi-Final', 'Final'
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentRegion       Region?   @relation(fields: [currentRegionId], references: [id], onDelete: SetNull)
+
+  @@map("user_tour_progress")
+}
+
+model Puzzle {
+  id          String   @id // Lichess puzzle ID
+  fen         String
+  moves       String   // Comma-separated moves
+  rating      Int
+  themes     String   // Comma-separated themes
+  pawnReward  Int      @default(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("puzzles")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  receiverId  String
+  content     String
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+model Quest {
+  id                String              @id @default(cuid())
+  title             String              // e.g., 'Win a Game', 'Solve 3 Puzzles'
+  requirementCount  Int
+  pawnReward        Int
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  userProgress      UserQuestProgress[]
+
+  @@map("quests")
+}
+
+model UserQuestProgress {
+  id            String    @id @default(cuid())
+  userId        String
+  questId       String
+  progress      Int       @default(0)
+  completed     Boolean   @default(false)
+  dateAssigned  DateTime  @default(now())
+  completedAt   DateTime?
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest         Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId, dateAssigned])
+  @@index([userId])
+  @@index([questId])
+  @@map("user_quest_progress")
+}
+
+model Achievement {
+  id          String              @id @default(cuid())
+  name        String              // e.g., 'Tactician', 'Speed Demon'
+  iconName    String              // Icon name from react-icons
+  description String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@map("user_achievements")
+}
+

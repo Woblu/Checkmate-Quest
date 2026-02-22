@@ -1,0 +1,144 @@
+import { PrismaClient } from '@prisma/client'
+import fs from 'fs'
+import path from 'path'
+import csv from 'csv-parser'
+
+const prisma = new PrismaClient()
+
+interface PuzzleRow {
+  PuzzleId: string
+  FEN: string
+  Moves: string
+  Rating: string
+  RatingDeviation: string
+  Popularity: string
+  NbPlays: string
+  Themes: string
+  GameUrl: string
+  OpeningTags: string
+}
+
+async function seedPuzzles() {
+  console.log('Starting puzzle seeding...')
+
+  const csvFilePath = path.join(process.cwd(), 'puzzles.csv')
+
+  // Check if file exists
+  if (!fs.existsSync(csvFilePath)) {
+    console.error(`Error: puzzles.csv not found at ${csvFilePath}`)
+    process.exit(1)
+  }
+
+  const puzzles: Array<{
+    id: string
+    fen: string
+    moves: string
+    rating: number
+    themes: string
+    pawnReward: number
+  }> = []
+
+  let totalProcessed = 0
+  let totalFiltered = 0
+  let batchCount = 0
+
+  return new Promise<void>((resolve, reject) => {
+    let processingBatch = false
+
+    fs.createReadStream(csvFilePath)
+      .pipe(csv())
+      .on('data', (row: PuzzleRow) => {
+        totalProcessed++
+
+        // Filter by rating (800-1500)
+        const rating = parseInt(row.Rating, 10)
+        if (isNaN(rating) || rating < 800 || rating > 1500) {
+          return // Skip this puzzle
+        }
+
+        totalFiltered++
+
+        // Map CSV columns to Prisma model
+        puzzles.push({
+          id: row.PuzzleId,
+          fen: row.FEN,
+          moves: row.Moves,
+          rating: rating,
+          themes: row.Themes || '',
+          pawnReward: 5,
+        })
+
+        // Process in batches of 1000
+        if (puzzles.length >= 1000 && !processingBatch) {
+          processingBatch = true
+          const batch = puzzles.splice(0, 1000)
+          batchCount++
+
+          prisma.puzzle
+            .createMany({
+              data: batch,
+              skipDuplicates: true, // Skip if puzzle ID already exists
+            })
+            .then(() => {
+              console.log(
+                `Batch ${batchCount}: Inserted 1000 puzzles (Total processed: ${totalProcessed}, Total filtered: ${totalFiltered})`
+              )
+              processingBatch = false
+            })
+            .catch((error) => {
+              console.error(`Error inserting batch ${batchCount}:`, error)
+              processingBatch = false
+              // Continue processing other batches
+            })
+        }
+
+        // Progress update every 10000 rows
+        if (totalProcessed % 10000 === 0) {
+          console.log(`Processed ${totalProcessed} rows, filtered ${totalFiltered} puzzles...`)
+        }
+      })
+      .on('end', async () => {
+        console.log('Finished reading CSV file')
+
+        // Insert remaining puzzles
+        if (puzzles.length > 0) {
+          batchCount++
+          try {
+            await prisma.puzzle.createMany({
+              data: puzzles,
+              skipDuplicates: true,
+            })
+            console.log(
+              `Final batch: Inserted ${puzzles.length} puzzles (Total processed: ${totalProcessed}, Total filtered: ${totalFiltered})`
+            )
+          } catch (error) {
+            console.error(`Error inserting final batch:`, error)
+          }
+        }
+
+        console.log('\n=== Seeding Complete ===')
+        console.log(`Total rows processed: ${totalProcessed}`)
+        console.log(`Total puzzles inserted: ${totalFiltered}`)
+        console.log(`Total batches: ${batchCount}`)
+
+        resolve()
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV file:', error)
+        reject(error)
+      })
+  })
+}
+
+async function main() {
+  try {
+    await seedPuzzles()
+  } catch (error) {
+    console.error('Error seeding puzzles:', error)
+    process.exit(1)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+main()
