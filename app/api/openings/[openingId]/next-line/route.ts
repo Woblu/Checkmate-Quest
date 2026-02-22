@@ -82,6 +82,7 @@ export async function GET(
     type MoveNodeWithFirstChild = Prisma.MoveNodeGetPayload<{
       include: { childNodes: { select: { id: true; sanMove: true } } }
     }>
+    type MoveNodeChild = { id: string; sanMove: string }
     const buildContinuationFromNode = async (nodeId: string): Promise<string[]> => {
       const continuation: string[] = []
       let currentNodeId: string | null = nodeId
@@ -101,7 +102,7 @@ export async function GET(
 
         if (!node || node.childNodes.length === 0) break
 
-        const nextNode = node.childNodes[0]
+        const nextNode: MoveNodeChild = node.childNodes[0]
         const nextIsLearned = learnedNodeIds.has(nextNode.id)
 
         // Stop if next node is already learned
