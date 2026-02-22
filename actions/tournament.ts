@@ -16,6 +16,7 @@ export async function processTournamentWin(
 ): Promise<{ 
   success: boolean
   regionUnlocked: boolean
+  unlocked_new_region?: boolean
   pawnsAwarded: number
   error?: string 
 }> {
