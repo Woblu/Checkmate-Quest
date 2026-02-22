@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Chessboard } from 'react-chessboard'
-import { Chess } from 'chess.js'
+import { Chess, type Piece, type Square } from 'chess.js'
 import { getCustomPieces, getCustomSquareStyles } from '@/lib/chess-customization'
 
 interface LineData {
@@ -245,7 +245,31 @@ export default function LearnOpeningPage() {
     }, 800) // Delay for visual effect
   }
 
-  const onDrop = async (sourceSquare: string, targetSquare: string) => {
+  // Async side effects after a correct move (progress save, opponent move, completion).
+  // Fired from onDrop without awaiting so onDrop can stay synchronous.
+  const handleCorrectMoveAsync = (
+    nextIndex: number,
+    newFen: string,
+    moveSan: string
+  ) => {
+    if (nextIndex >= lineData!.line.length) {
+      markLineAsLearned().then(() => {
+        setLineCompleted(true)
+        setShowSuccessModal(true)
+      }).catch((err) => console.error('Error marking line as learned:', err))
+    } else {
+      setIsUserTurn(false)
+      setCurrentMoveIndex(nextIndex)
+      const opponentMove = lineData!.line[nextIndex]
+      playOpponentMove(opponentMove, newFen)
+    }
+  }
+
+  const onDrop = (
+    sourceSquare: Square,
+    targetSquare: Square,
+    _piece: Piece
+  ): boolean => {
     if (!lineData || lineData.completed || lineCompleted || !isUserTurn || isOpponentMoving) {
       return false
     }
@@ -254,18 +278,15 @@ export default function LearnOpeningPage() {
       return false
     }
 
-    // User always plays white (even indices: 0, 2, 4...)
-    // Check if this is actually a user move
     if (currentMoveIndex % 2 !== 0) {
       setError('Not your turn!')
       return false
     }
 
     try {
-      // Get current FEN from ref to ensure we have the latest state
       const currentFen = chessRef.current.fen()
       const gameCopy = new Chess(currentFen)
-      
+
       const move = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
@@ -275,7 +296,6 @@ export default function LearnOpeningPage() {
       if (!move) {
         const expectedMove = lineData.line[currentMoveIndex]
         const moveInfo = parseMoveInfo(expectedMove, currentFen)
-        
         if (moveInfo) {
           setError(`Invalid move. Move the ${moveInfo.piece} from ${moveInfo.from.toUpperCase()} to ${moveInfo.to.toUpperCase()}`)
         } else {
@@ -289,9 +309,7 @@ export default function LearnOpeningPage() {
       const normalizedExpectedMove = expectedMove.replace(/[+#x]/g, '').trim()
 
       if (normalizedUserMove !== normalizedExpectedMove) {
-        // Wrong move - provide detailed feedback
         const moveInfo = parseMoveInfo(expectedMove, currentFen)
-        
         if (moveInfo) {
           setError(`Incorrect! Move the ${moveInfo.piece} from ${moveInfo.from.toUpperCase()} to ${moveInfo.to.toUpperCase()}`)
         } else {
@@ -300,38 +318,18 @@ export default function LearnOpeningPage() {
         return false
       }
 
-      // Correct move!
       setError(null)
-      
-      // Update chess state - maintain the same instance
       const newFen = gameCopy.fen()
       chessRef.current = new Chess(newFen)
       setChess(new Chess(newFen))
-      
       setUserMoves((prev) => [...prev, move.san])
       const nextIndex = currentMoveIndex + 1
 
-      if (nextIndex >= lineData.line.length) {
-        // Line completed!
-        await markLineAsLearned()
-        setLineCompleted(true)
-        setShowSuccessModal(true)
-      } else {
-        // It's opponent's turn now (next move is at odd index)
-        setIsUserTurn(false)
-        setCurrentMoveIndex(nextIndex)
-        
-        // Play opponent's move automatically (next move in line)
-        // Pass the FEN explicitly to ensure we use the correct position
-        const opponentMove = lineData.line[nextIndex]
-        playOpponentMove(opponentMove, newFen)
-      }
-
+      handleCorrectMoveAsync(nextIndex, newFen, move.san)
       return true
-    } catch (error) {
+    } catch {
       const expectedMove = lineData?.line[currentMoveIndex]
       const moveInfo = expectedMove ? parseMoveInfo(expectedMove, chessRef.current.fen()) : null
-      
       if (moveInfo) {
         setError(`Invalid move. Move the ${moveInfo.piece} to ${moveInfo.to.toUpperCase()}`)
       } else {
