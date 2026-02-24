@@ -110,7 +110,7 @@ export default function HomePage() {
               <span className="text-6xl">♔</span>
             </div>
             <h1 className="text-5xl font-extrabold mb-4">
-              Welcome to <span className="text-chess-bg">Rook</span><span className="text-slate-900/70">ly</span>
+              Welcome to <span className="text-blue-600">Check</span><span className="text-orange-500">mate</span>
             </h1>
             <p className="text-xl mb-8 text-slate-900/90">
               Play chess, climb ranks, and compete with players worldwide

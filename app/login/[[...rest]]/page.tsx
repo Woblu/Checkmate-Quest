@@ -6,10 +6,10 @@ export default function LoginPage() {
       <div className="flex flex-col items-center gap-6">
         <div className="text-center">
           <div className="inline-flex w-16 h-16 items-center justify-center mb-4">
-            <img src="/rooklysmall.png" alt="Rookly" className="w-16 h-16 object-contain" />
+            <img src="/rooklysmall.png" alt="Checkmate" className="w-16 h-16 object-contain" />
           </div>
           <h1 className="text-3xl font-extrabold mb-2">
-            <span className="text-blue-400">Rook</span><span className="text-pawn-gold">ly</span>
+            <span className="text-blue-400">Check</span><span className="text-orange-400">mate</span>
           </h1>
           <p className="text-slate-300">Sign in to continue playing chess</p>
         </div>

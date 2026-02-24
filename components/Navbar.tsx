@@ -66,10 +66,10 @@ export default function Navbar() {
           {/* ── Left: Logo + desktop links ──────────────────────────────── */}
           <div className="flex items-center gap-4 sm:gap-6">
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <Image src="/rooklysmall.png" alt="Rookly" width={32} height={32} className="w-7 h-7 sm:w-8 sm:h-8 object-contain" priority />
+              <Image src="/rooklysmall.png" alt="Checkmate" width={32} height={32} className="w-7 h-7 sm:w-8 sm:h-8 object-contain" priority />
               <span className="font-bold text-lg sm:text-xl">
-                <span className="text-blue-400">Rook</span>
-                <span className="text-pawn-gold">ly</span>
+                <span className="text-blue-400">Check</span>
+                <span className="text-orange-400">mate</span>
               </span>
             </Link>
 

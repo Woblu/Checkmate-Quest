@@ -13,20 +13,20 @@ const SocialWidget = dynamic(() => import('@/components/SocialWidget'), { ssr: f
 const inter = Inter({ subsets: ['latin'], display: 'optional', variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Rookly – Play & Rank Chess',
+  title: 'Checkmate – Play & Rank Chess',
   description: 'Play chess, climb the ranks, and conquer the World Chess Tour.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Rookly',
+    title: 'Checkmate',
   },
   icons: {
     icon: '/rooklysmall.png',
     apple: '/rooklysmall.png',
   },
   openGraph: {
-    title: 'Rookly – Play & Rank Chess',
+    title: 'Checkmate – Play & Rank Chess',
     description: 'Play chess, climb the ranks, and conquer the World Chess Tour.',
     type: 'website',
   },
@@ -54,7 +54,7 @@ export default function RootLayout({
           <link rel="apple-touch-icon" href="/rooklysmall.png" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-          <meta name="apple-mobile-web-app-title" content="Rookly" />
+          <meta name="apple-mobile-web-app-title" content="Checkmate" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#0f172a" />
         </head>
