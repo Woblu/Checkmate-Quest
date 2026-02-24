@@ -96,25 +96,25 @@ export default function Navbar() {
           </div>
 
           {/* ── Right: Auth + mobile hamburger ──────────────────────────── */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink">
             {dbUser ? (
               <>
                 {/* Pawns pill — hidden on xs */}
-                <div className="hidden sm:flex items-center gap-1.5 bg-chess-card px-3 py-1.5 rounded-full border border-chess-border">
+                <div className="hidden sm:flex items-center gap-1.5 bg-chess-card px-3 py-1.5 rounded-full border border-chess-border shrink-0">
                   <GiCoins className="text-pawn-gold text-base" />
                   <span className="text-white font-semibold text-sm tabular-nums">{dbUser.pawns}</span>
                   <span className="text-slate-400 text-xs hidden md:inline">pawns</span>
                 </div>
 
                 {/* Profile dropdown — desktop */}
-                <div className="hidden lg:block relative" ref={dropdownRef}>
+                <div className="hidden lg:block relative min-w-0 shrink" ref={dropdownRef}>
                   <button
                     onClick={() => setDropdownOpen((o) => !o)}
-                    className="flex items-center gap-2 bg-chess-card px-3 py-1.5 rounded-lg border border-chess-border hover:bg-slate-700 transition-colors"
+                    className="flex items-center gap-2 bg-chess-card px-3 py-1.5 rounded-lg border border-chess-border hover:bg-slate-700 transition-colors min-w-0 w-full max-w-full"
                   >
-                    <RankAvatar name={dbUser.name} rank={dbUser.rank} size="sm" />
-                    <span className="text-white font-medium text-sm max-w-[120px] truncate">{dbUser.name}</span>
-                    <HiChevronDown className={`text-slate-400 text-sm transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                    <RankAvatar name={dbUser.name} rank={dbUser.rank} size="sm" className="shrink-0" />
+                    <span className="text-white font-medium text-sm truncate min-w-0">{dbUser.name}</span>
+                    <HiChevronDown className={`text-slate-400 text-sm transition-transform shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {dropdownOpen && (
