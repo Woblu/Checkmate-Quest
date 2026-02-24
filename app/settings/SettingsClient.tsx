@@ -13,6 +13,8 @@ interface User {
 
 interface Props {
   initialUser: User
+  ownedPieceSets: string[]
+  ownedBoardStyles: string[]
 }
 
 // Available piece sets (must match folder names in /public/Pieces/)
@@ -37,7 +39,7 @@ const BOARD_STYLES = [
   { id: 'wood4', name: 'Wood 4', image: 'wood4.jpg' },
 ]
 
-export default function SettingsPage({ initialUser }: Props) {
+export default function SettingsPage({ initialUser, ownedPieceSets, ownedBoardStyles }: Props) {
   const { dbUser, setDbUser } = useDbUser()
   const [user, setUser] = useState<User>(initialUser)
   const [saving, setSaving] = useState(false)
@@ -49,7 +51,7 @@ export default function SettingsPage({ initialUser }: Props) {
     newPassword: '',
     confirmPassword: '',
     pieceSet: initialUser.pieceSet || 'cardinal',
-    boardStyle: initialUser.boardStyle || 'canvas2',
+    boardStyle: initialUser.boardStyle || 'green',
   })
 
   const handleSave = async () => {
@@ -189,13 +191,13 @@ export default function SettingsPage({ initialUser }: Props) {
           </div>
         </div>
 
-        {/* Piece Set Selection */}
+        {/* Chessmen Selection */}
         <div className="bg-chess-card rounded-xl shadow-lg p-6 mb-6 border border-chess-border">
-          <h2 className="text-2xl font-extrabold text-white mb-4">Piece Set</h2>
-          <p className="text-slate-300 mb-4">Choose your preferred chess piece style</p>
+          <h2 className="text-2xl font-extrabold text-white mb-4">Chessmen</h2>
+          <p className="text-slate-300 mb-4">Choose your preferred chessmen style (must be owned)</p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {PIECE_SETS.map((set) => (
+            {PIECE_SETS.filter((set) => ownedPieceSets.includes(set.id)).map((set) => (
               <button
                 key={set.id}
                 onClick={() => setFormData({ ...formData, pieceSet: set.id })}
@@ -231,13 +233,13 @@ export default function SettingsPage({ initialUser }: Props) {
           </div>
         </div>
 
-        {/* Board Style Selection */}
+        {/* Board Style Selection (owned only) */}
         <div className="bg-chess-card rounded-xl shadow-lg p-6 mb-6 border border-chess-border">
           <h2 className="text-2xl font-extrabold text-white mb-4">Board Style</h2>
-          <p className="text-slate-300 mb-4">Choose your preferred chess board appearance</p>
+          <p className="text-slate-300 mb-4">Choose your preferred chess board appearance (must be owned)</p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {BOARD_STYLES.map((style) => (
+            {BOARD_STYLES.filter((style) => ownedBoardStyles.includes(style.id)).map((style) => (
               <button
                 key={style.id}
                 onClick={() => setFormData({ ...formData, boardStyle: style.id })}

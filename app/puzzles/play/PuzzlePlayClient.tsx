@@ -415,12 +415,12 @@ function PuzzlePlayPageInner() {
               customPieces={getCustomPieces(dbUser?.pieceSet || 'cardinal')}
               customDarkSquareStyle={(() => {
                 const boardUrl = getBoardStyleImageUrl(dbUser?.boardStyle)
-                const fallback = getCustomSquareStyles(dbUser?.boardStyle || 'canvas2')
+                const fallback = getCustomSquareStyles(dbUser?.boardStyle || 'green')
                 return boardUrl ? { backgroundColor: 'transparent' } : fallback.dark
               })()}
               customLightSquareStyle={(() => {
                 const boardUrl = getBoardStyleImageUrl(dbUser?.boardStyle)
-                const fallback = getCustomSquareStyles(dbUser?.boardStyle || 'canvas2')
+                const fallback = getCustomSquareStyles(dbUser?.boardStyle || 'green')
                 return boardUrl ? { backgroundColor: 'transparent' } : fallback.light
               })()}
               customBoardStyle={(() => {

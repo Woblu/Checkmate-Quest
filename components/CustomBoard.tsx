@@ -17,7 +17,7 @@ export default function CustomBoard({
   equippedBoardUrl,
   equippedPieceSet,
   fallbackPieceSet = 'cardinal',
-  fallbackBoardStyle = 'canvas2',
+  fallbackBoardStyle = 'green',
   ...chessboardProps
 }: CustomBoardProps) {
   // Use equipped piece set, or fall back to user's saved preference

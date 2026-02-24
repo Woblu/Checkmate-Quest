@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         pieceSet: pieceSet || 'cardinal',
-        boardStyle: boardStyle || 'canvas2',
+        boardStyle: boardStyle || 'green',
       },
       select: {
         id: true,

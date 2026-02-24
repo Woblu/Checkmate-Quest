@@ -184,7 +184,7 @@ export default function ReviewClient({
                   equippedBoardUrl={equippedBoardUrl}
                   equippedPieceSet={equippedPieceSet}
                   fallbackPieceSet={dbUser?.pieceSet || 'cardinal'}
-                  fallbackBoardStyle={dbUser?.boardStyle || 'canvas2'}
+                  fallbackBoardStyle={dbUser?.boardStyle || 'green'}
                   customBoardStyle={{ borderRadius: '6px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
                   animationDuration={0}
                 />

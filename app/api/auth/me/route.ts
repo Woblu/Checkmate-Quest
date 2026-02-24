@@ -71,11 +71,43 @@ export async function GET() {
       return NextResponse.json({ user })
     }
 
-    // 4. Brand-new user
+    // 4. Brand-new user – give default cosmetics (Cardinal pieces + Green board)
     user = await prisma.user.create({
-      data: { clerk_id: userId, email, name },
+      data: {
+        clerk_id: userId,
+        email,
+        name,
+        pieceSet: 'cardinal',
+        boardStyle: 'green',
+      },
       select: USER_SELECT,
     })
+
+    // Seed default owned & equipped cosmetics for new users
+    try {
+      const defaultCosmetics = await prisma.cosmetic.findMany({
+        where: {
+          OR: [
+            { type: 'BOARD', asset_url: '/Boards/green.png' },
+            { type: 'PIECES', asset_url: 'cardinal' },
+          ],
+        },
+        select: { id: true, type: true, asset_url: true },
+      })
+
+      if (defaultCosmetics.length > 0) {
+        await prisma.userCosmetic.createMany({
+          data: defaultCosmetics.map((c) => ({
+            userId: user.id,
+            cosmeticId: c.id,
+            isEquipped: true,
+          })),
+          skipDuplicates: true,
+        })
+      }
+    } catch (err) {
+      console.error('Error seeding default cosmetics for new user:', err)
+    }
     return NextResponse.json({ user })
   } catch (error) {
     console.error('Error in /api/auth/me:', error)

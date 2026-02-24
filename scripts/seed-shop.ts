@@ -8,7 +8,8 @@ const BOARDS_DIR = path.join(process.cwd(), 'public', 'Boards')
 const PIECES_DIR = path.join(process.cwd(), 'public', 'Pieces')
 
 const BOARD_EXT = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
-const DEFAULT_BOARD_ID = 'canvas2'   // free default board (filename without ext)
+// Defaults the user starts with: Green board + Cardinal chessmen
+const DEFAULT_BOARD_ID = 'green'      // free default board (filename without ext)
 const DEFAULT_PIECE_SET = 'cardinal'  // free default piece set
 
 function toTitleCase(str: string): string {
@@ -87,6 +88,9 @@ async function main() {
   console.log('')
   for (const folder of pieceSets) {
     const assetUrl = folder.toLowerCase()
+    // Skip sets we don't want in the shop
+    if (assetUrl === 'drawn') continue
+
     const isDefault = assetUrl === DEFAULT_PIECE_SET
     const name = toTitleCase(folder)
     const price = isDefault ? 0 : 50
