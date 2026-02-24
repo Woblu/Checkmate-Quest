@@ -65,7 +65,7 @@ function PlayBotPageInner() {
   const nodeId = searchParams.get('nodeId')
 
   // ── Core hooks ────────────────────────────────────────────────────────────
-  const { isReady, isThinking, sendCommand, getBestMove, getEvaluation } = useStockfish()
+  const { isReady, isThinking, sendCommand, getBestMove, getEvaluation, error: engineError } = useStockfish()
   const { playMove, playCapture, playCheck, playGameEnd } = useChessSound()
   const { isAnalyzing, progress: analysisProgress, result: analysisResult, analyze } = useGameAnalysis()
   const { premove, premoveFrom, handlePremoveClick, attemptPremove, clearPremove, premoveStyles } = usePremove()
@@ -353,10 +353,15 @@ function PlayBotPageInner() {
             <p className="text-slate-400 text-sm sm:text-base">Choose an opponent, pick your time control, and play</p>
           </div>
 
-          {!isReady && (
+          {!isReady && !engineError && (
             <div className="bg-chess-card border border-chess-border rounded-lg p-3 mb-5 flex items-center gap-2 justify-center">
               <div className="w-4 h-4 border-2 border-pawn-gold border-t-transparent rounded-full animate-spin" />
               <span className="text-slate-300 text-sm">Initialising chess engine…</span>
+            </div>
+          )}
+          {engineError && (
+            <div className="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-5 flex items-center gap-2 justify-center">
+              <span className="text-red-300 text-sm">{engineError}</span>
             </div>
           )}
 
@@ -376,7 +381,7 @@ function PlayBotPageInner() {
                 const sel = selectedBot?.id === bot.id
                 const s = CATEGORY_STYLES[bot.category]
                 return (
-                  <button key={bot.id} onClick={() => setSelectedBot(bot)} disabled={!isReady}
+                  <button key={bot.id} onClick={() => setSelectedBot(bot)} disabled={!isReady || !!engineError}
                     className={`relative p-4 sm:p-5 rounded-xl border-2 text-left transition-all duration-150 ${sel ? `${s.selectedBg} ${s.selectedBorder} shadow-lg ring-1 ring-pawn-gold/30` : `bg-chess-card ${s.border} hover:scale-[1.02]`} ${!isReady ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                     {sel && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-pawn-gold flex items-center justify-center text-slate-900 text-xs font-black">✓</div>}
                     <div className={`w-12 h-12 rounded-full ${s.avatarBg} border ${s.selectedBorder} flex items-center justify-center text-sm font-extrabold mb-2 mx-auto ${s.label}`}>{initials(bot.name)}</div>
@@ -404,7 +409,7 @@ function PlayBotPageInner() {
                   <label className="text-slate-300 text-sm font-medium block mb-1">Name <span className="text-slate-500">(optional)</span></label>
                   <input type="text" value={customBotName} onChange={(e) => setCustomBotName(e.target.value)} placeholder="Custom Bot" maxLength={30} className="w-full bg-chess-bg border border-chess-border rounded-lg px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-pawn-gold/40" />
                 </div>
-                <button onClick={() => setSelectedBot({ id: 'custom', name: customBotName.trim() || 'Custom Bot', title: getBotTitleByElo(customBotElo), elo: customBotElo, depth: customBotDepth, description: 'Custom configuration.', category: getBotCategoryByElo(customBotElo) })} disabled={!isReady}
+                <button onClick={() => setSelectedBot({ id: 'custom', name: customBotName.trim() || 'Custom Bot', title: getBotTitleByElo(customBotElo), elo: customBotElo, depth: customBotDepth, description: 'Custom configuration.', category: getBotCategoryByElo(customBotElo) })} disabled={!isReady || !!engineError}
                   className={`w-full py-2 rounded-lg font-bold transition-colors ${!isReady ? 'bg-slate-700 text-slate-400 cursor-not-allowed' : selectedBot?.id === 'custom' ? 'bg-pawn-gold text-slate-900' : 'bg-chess-card border border-chess-border text-white hover:bg-slate-700'}`}>
                   {selectedBot?.id === 'custom' ? '✓ Configured' : 'Set as Opponent'}
                 </button>
@@ -413,7 +418,7 @@ function PlayBotPageInner() {
           )}
 
           {/* Time control + Start */}
-          {selectedBot && isReady && (
+          {selectedBot && isReady && !engineError && (
             <div className="mt-8 space-y-5">
               {/* Time control chips */}
               <div>

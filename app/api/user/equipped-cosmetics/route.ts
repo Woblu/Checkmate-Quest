@@ -1,32 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { getUserFromToken } from '@/lib/auth'
 
 /**
  * GET /api/user/equipped-cosmetics
- * Returns the user's currently equipped cosmetics
+ * Returns the user's currently equipped cosmetics (Clerk auth only)
  */
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) return new NextResponse('Unauthorized', { status: 401 })
 
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
-    }
-
-    const user = await getUserFromToken(token)
+    const user = await prisma.user.findUnique({
+      where: { clerk_id: userId },
+      select: { id: true },
+    })
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
+        { error: 'User not found' },
+        { status: 404 }
       )
     }
 

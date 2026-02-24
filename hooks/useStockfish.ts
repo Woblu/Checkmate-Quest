@@ -51,15 +51,34 @@ export function useStockfish(): UseStockfishReturn {
 
   useEffect(() => {
     let worker: Worker
+    let readyTimeout: ReturnType<typeof setTimeout> | null = null
+
+    const clearReadyTimeout = () => {
+      if (readyTimeout) {
+        clearTimeout(readyTimeout)
+        readyTimeout = null
+      }
+    }
+
     try {
       worker = new Worker('/stockfish.js')
       workerRef.current = worker
+
+      // If engine doesn't respond within 12s (e.g. SharedArrayBuffer unavailable, worker 404), stop blocking the UI
+      readyTimeout = setTimeout(() => {
+        if (isReadyRef.current) return
+        console.warn('Stockfish did not become ready in time')
+        setError('Engine failed to load. Refresh the page or try another browser.')
+        setIsReady(true)
+        isReadyRef.current = true
+      }, 12000)
 
       worker.onmessage = (e: MessageEvent<string>) => {
         const msg = e.data.trim()
 
         // ── Ready ──────────────────────────────────────────────────────────
         if (msg === 'uciok' || msg.includes('readyok')) {
+          clearReadyTimeout()
           isReadyRef.current = true
           setIsReady(true)
           setError(null)
@@ -112,10 +131,11 @@ export function useStockfish(): UseStockfishReturn {
       }
 
       worker.onerror = (err) => {
+        clearReadyTimeout()
         console.error('Stockfish worker error:', err)
         setError('Stockfish worker error')
-        setIsReady(false)
-        isReadyRef.current = false
+        setIsReady(true)
+        isReadyRef.current = true
         isBusyRef.current  = false
         setIsThinking(false)
         pendingMoveRef.current?.(null)
@@ -127,11 +147,15 @@ export function useStockfish(): UseStockfishReturn {
       worker.postMessage('uci')
       worker.postMessage('isready')
     } catch (err) {
+      clearReadyTimeout()
       console.error('Failed to init Stockfish:', err)
       setError('Failed to initialize Stockfish worker')
+      setIsReady(true)
+      isReadyRef.current = true
     }
 
     return () => {
+      clearReadyTimeout()
       worker?.terminate()
       workerRef.current = null
     }
