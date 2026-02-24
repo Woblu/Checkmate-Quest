@@ -298,7 +298,7 @@ function CampaignPageInner({ initialRegions, initialCurrentRegionId, pieceSet }:
                             src={`/Pieces/${pieceSet}/wK.svg`}
                             alt="Your position"
                             width={28} height={28}
-                            className="drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] pointer-events-none"
+                            className="pointer-events-none"
                             unoptimized
                           />
                         </motion.div>
