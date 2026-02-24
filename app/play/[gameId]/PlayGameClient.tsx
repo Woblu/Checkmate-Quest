@@ -155,7 +155,15 @@ export default function PlayGameClient({ gameId }: Props) {
   useEffect(() => {
     if (!dbUser) return
 
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000', {
+    // Always use current origin in browser so production never connects to localhost
+    let baseUrl =
+      typeof window !== 'undefined'
+        ? (process.env.NEXT_PUBLIC_SOCKET_URL || '').trim() || window.location.origin
+        : 'http://localhost:3000'
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && baseUrl.includes('localhost')) {
+      baseUrl = window.location.origin
+    }
+    const socket = io(baseUrl, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 10,

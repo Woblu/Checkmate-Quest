@@ -5,11 +5,12 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import { UserProvider } from '@/app/context/UserContext'
+import UnregisterServiceWorker from '@/components/UnregisterServiceWorker'
 
 // Deferred — not needed on first paint
 const SocialWidget = dynamic(() => import('@/components/SocialWidget'), { ssr: false })
 
-const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
+const inter = Inter({ subsets: ['latin'], display: 'optional', variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'Rookly – Play & Rank Chess',
@@ -58,6 +59,7 @@ export default function RootLayout({
           <meta name="theme-color" content="#0f172a" />
         </head>
         <body>
+          <UnregisterServiceWorker />
           <UserProvider>
             <Navbar />
             {children}

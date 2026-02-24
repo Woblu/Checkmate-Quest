@@ -46,7 +46,15 @@ export default function PlayLobbyClient() {
   useEffect(() => {
     if (!dbUser) return
 
-    const s = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000', {
+    // Always use current origin in browser so production never connects to localhost
+    let baseUrl =
+      typeof window !== 'undefined'
+        ? (process.env.NEXT_PUBLIC_SOCKET_URL || '').trim() || window.location.origin
+        : 'http://localhost:3000'
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && baseUrl.includes('localhost')) {
+      baseUrl = window.location.origin
+    }
+    const s = io(baseUrl, {
       transports: ['websocket'],
     })
     socketRef.current = s

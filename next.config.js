@@ -1,6 +1,8 @@
+// Disable PWA on Vercel to avoid workbox Cache errors that can break the page
+const isVercel = process.env.VERCEL === '1'
 const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  disable: process.env.NODE_ENV === 'development' || isVercel,
   register: true,
   skipWaiting: true,
   cacheOnFrontEndNav: true,
