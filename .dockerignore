@@ -1,0 +1,15 @@
+# Dependencies and build output (rebuilt in image)
+node_modules
+.next
+.git
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Misc
+README.md
+docs
+*.md
+.DS_Store

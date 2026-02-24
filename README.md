@@ -52,6 +52,14 @@ A Next.js chess application with PostgreSQL (Prisma) featuring a comprehensive r
 
 6. **Open [http://localhost:3000](http://localhost:3000)** in your browser
 
+## Production deployment
+
+The app uses a custom Node server (Next.js + Socket.IO). **You cannot use Vercel’s default serverless** — you need a host that runs `node server.js`.
+
+- **Free forever:** **[docs/FREE-HOSTING-GUIDE.md](docs/FREE-HOSTING-GUIDE.md)** — Render + Neon (simple; service sleeps after 15 min → cold starts).
+- **Free, no cold starts:** **[docs/FLY-HOSTING-GUIDE.md](docs/FLY-HOSTING-GUIDE.md)** — Fly.io + Neon (app stays up; matchmaking works immediately).
+- **Other hosts / Docker:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — Railway, Render, Fly.io, VPS, env vars.
+
 ## Seeding the database
 
 After a fresh database (or after wiping it), run these seed scripts so the app has regions, shop items, openings, and optionally puzzles.

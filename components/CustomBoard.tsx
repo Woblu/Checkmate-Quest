@@ -26,17 +26,34 @@ export default function CustomBoard({
 
   // Use equipped board image, or user's Settings board image, or solid colors
   const boardImageUrl = equippedBoardUrl ?? getBoardStyleImageUrl(fallbackBoardStyle)
-  const squareStyleFromImage = boardImageUrl
+  const fallbackStyles = getCustomSquareStyles(fallbackBoardStyle)
+
+  // When we have a board image: show it once on the board container and use transparent squares
+  // so the image shows through. (Using the same image on every square made each cell a tiny copy = checkered mess.)
+  const useBoardImage = !!boardImageUrl
+  const customDarkSquareStyle = useBoardImage
+    ? { backgroundColor: 'transparent' }
+    : fallbackStyles.dark
+  const customLightSquareStyle = useBoardImage
+    ? { backgroundColor: 'transparent' }
+    : fallbackStyles.light
+
+  const boardStyle = useBoardImage && chessboardProps.customBoardStyle
     ? {
+        ...chessboardProps.customBoardStyle,
         backgroundImage: `url(${boardImageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }
-    : null
-  const fallbackStyles = getCustomSquareStyles(fallbackBoardStyle)
-
-  const customDarkSquareStyle = squareStyleFromImage ?? fallbackStyles.dark
-  const customLightSquareStyle = squareStyleFromImage ?? fallbackStyles.light
+    : useBoardImage
+      ? {
+          backgroundImage: `url(${boardImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          borderRadius: chessboardProps.customBoardStyle?.borderRadius ?? '4px',
+          boxShadow: chessboardProps.customBoardStyle?.boxShadow ?? '0 4px 12px rgba(0,0,0,0.4)',
+        }
+      : chessboardProps.customBoardStyle
 
   return (
     <Chessboard
@@ -45,6 +62,7 @@ export default function CustomBoard({
       customPieces={customPieces}
       customDarkSquareStyle={customDarkSquareStyle}
       customLightSquareStyle={customLightSquareStyle}
+      customBoardStyle={boardStyle}
     />
   )
 }

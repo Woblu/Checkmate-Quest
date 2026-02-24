@@ -416,17 +416,20 @@ function PuzzlePlayPageInner() {
               customDarkSquareStyle={(() => {
                 const boardUrl = getBoardStyleImageUrl(dbUser?.boardStyle)
                 const fallback = getCustomSquareStyles(dbUser?.boardStyle || 'canvas2')
-                return boardUrl ? { backgroundImage: `url(${boardUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : fallback.dark
+                return boardUrl ? { backgroundColor: 'transparent' } : fallback.dark
               })()}
               customLightSquareStyle={(() => {
                 const boardUrl = getBoardStyleImageUrl(dbUser?.boardStyle)
                 const fallback = getCustomSquareStyles(dbUser?.boardStyle || 'canvas2')
-                return boardUrl ? { backgroundImage: `url(${boardUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : fallback.light
+                return boardUrl ? { backgroundColor: 'transparent' } : fallback.light
               })()}
-              customBoardStyle={{
-                borderRadius: '4px',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
-              }}
+              customBoardStyle={(() => {
+                const boardUrl = getBoardStyleImageUrl(dbUser?.boardStyle)
+                const base = { borderRadius: '4px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)' }
+                return boardUrl
+                  ? { ...base, backgroundImage: `url(${boardUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : base
+              })()}
             />
           </div>
         </div>
