@@ -31,7 +31,7 @@ export default function PlayerHeader({
   increment = 0,
   onTimeUp,
   onTick,
-  pieceSet = 'caliente',
+  pieceSet = 'cardinal',
 }: PlayerHeaderProps) {
   const [displayTime, setDisplayTime] = useState(timeLeft ?? 0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -81,12 +81,12 @@ export default function PlayerHeader({
   const getPieceImage = useCallback((piece: string): string => {
     const ps = pieceSet?.toLowerCase() || 'caliente'
     const map: Record<string, string> = {
-      p: `/pieces/${ps}/bP.svg`, r: `/pieces/${ps}/bR.svg`,
-      n: `/pieces/${ps}/bN.svg`, b: `/pieces/${ps}/bB.svg`,
-      q: `/pieces/${ps}/bQ.svg`, k: `/pieces/${ps}/bK.svg`,
-      P: `/pieces/${ps}/wP.svg`, R: `/pieces/${ps}/wR.svg`,
-      N: `/pieces/${ps}/wN.svg`, B: `/pieces/${ps}/wB.svg`,
-      Q: `/pieces/${ps}/wQ.svg`, K: `/pieces/${ps}/wK.svg`,
+      p: `/Pieces/${ps}/bP.svg`, r: `/Pieces/${ps}/bR.svg`,
+      n: `/Pieces/${ps}/bN.svg`, b: `/Pieces/${ps}/bB.svg`,
+      q: `/Pieces/${ps}/bQ.svg`, k: `/Pieces/${ps}/bK.svg`,
+      P: `/Pieces/${ps}/wP.svg`, R: `/Pieces/${ps}/wR.svg`,
+      N: `/Pieces/${ps}/wN.svg`, B: `/Pieces/${ps}/wB.svg`,
+      Q: `/Pieces/${ps}/wQ.svg`, K: `/Pieces/${ps}/wK.svg`,
     }
     return map[piece] ?? ''
   }, [pieceSet])
@@ -124,8 +124,8 @@ export default function PlayerHeader({
             className="w-3.5 h-3.5 opacity-60 object-contain"
             onError={(e) => {
               const t = e.target as HTMLImageElement
-              if (!t.src.includes('/caliente/'))
-                t.src = getPieceImage(piece).replace(`/${pieceSet}/`, '/caliente/')
+              if (!t.src.includes('/cardinal/'))
+                t.src = getPieceImage(piece).replace(`/${pieceSet}/`, '/cardinal/')
               else
                 t.style.display = 'none'
             }}

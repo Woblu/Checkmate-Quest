@@ -54,14 +54,14 @@ function createCustomPieces(pieceSet: string): { [key: string]: CustomPieceFn } 
     return ({ squareWidth }) => (
       <img
         style={{ width: squareWidth, height: squareWidth }}
-        src={`/pieces/${pieceSet.toLowerCase()}/${pieceName}.svg`}
+        src={`/Pieces/${pieceSet.toLowerCase()}/${pieceName}.svg`}
         alt={pieceName}
         onError={(e) => {
           // Fallback to default if image not found
           const target = e.target as HTMLImageElement
           if (!target.dataset.fallback) {
             target.dataset.fallback = 'true'
-            target.src = `/pieces/caliente/${pieceName}.svg`
+            target.src = `/Pieces/cardinal/${pieceName}.svg`
           } else {
             // If default also fails, reduce opacity
             target.style.opacity = '0.3'

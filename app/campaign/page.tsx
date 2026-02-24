@@ -55,7 +55,7 @@ export default async function CampaignPage() {
     <CampaignClient
       initialRegions={initialRegions}
       initialCurrentRegionId={currentRegionId}
-      pieceSet={user.pieceSet || 'caliente'}
+      pieceSet={user.pieceSet || 'cardinal'}
     />
   )
 }

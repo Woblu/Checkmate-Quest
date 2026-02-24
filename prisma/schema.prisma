@@ -19,7 +19,7 @@ model User {
   currentPoints         Float          @default(0)
   gamesPlayedInCycle    Int            @default(0)
   totalGames            Int            @default(0)
-  pieceSet              String         @default("caliente")
+  pieceSet              String         @default("cardinal")
   boardStyle            String         @default("canvas2")
   pawns                 Int            @default(0)
   xp                    Int            @default(0)

@@ -14,14 +14,14 @@ interface Props {
   initialUser: User
 }
 
-// Available piece sets (should match folder names in /public/pieces/)
+// Available piece sets (must match folder names in /public/Pieces/)
 const PIECE_SETS = [
-  { id: 'caliente', name: 'Caliente' },
   { id: 'cardinal', name: 'Cardinal' },
-  { id: 'cburnett', name: 'Cburnett' },
-  { id: 'celtic', name: 'Celtic' },
-  { id: 'Drawn', name: 'Drawn' },
   { id: 'pixel', name: 'Pixel' },
+  { id: 'gioco', name: 'Gioco' },
+  { id: 'maestro', name: 'Maestro' },
+  { id: 'fresca', name: 'Fresca' },
+  { id: 'tatiana', name: 'Tatiana' },
 ]
 
 // Available board styles (using images from /public/Boards/)
@@ -46,7 +46,7 @@ export default function SettingsPage({ initialUser }: Props) {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
-    pieceSet: initialUser.pieceSet || 'caliente',
+    pieceSet: initialUser.pieceSet || 'cardinal',
     boardStyle: initialUser.boardStyle || 'canvas2',
   })
 
@@ -202,7 +202,7 @@ export default function SettingsPage({ initialUser }: Props) {
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 mb-2 flex items-center justify-center bg-chess-card rounded border border-chess-border">
                     <img
-                      src={`/pieces/${set.id}/wQ.svg`}
+                      src={`/Pieces/${set.id}/wQ.svg`}
                       alt={`${set.name} Queen`}
                       className="w-full h-full object-contain"
                       onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -210,7 +210,7 @@ export default function SettingsPage({ initialUser }: Props) {
                         // Prevent infinite loop - only try default if not already trying default
                         if (!target.src.includes('/default/') && !target.dataset.fallback) {
                           target.dataset.fallback = 'true'
-                          target.src = '/pieces/default/wQ.svg'
+                          target.src = '/Pieces/cardinal/wQ.svg'
                         } else {
                           // If default also fails, hide the image or show placeholder
                           target.style.display = 'none'

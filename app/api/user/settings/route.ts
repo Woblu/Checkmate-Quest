@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       where: { id: user.id },
       data: {
         name: name.trim(),
-        pieceSet: pieceSet || 'caliente',
+        pieceSet: pieceSet || 'cardinal',
         boardStyle: boardStyle || 'canvas2',
       },
       select: {

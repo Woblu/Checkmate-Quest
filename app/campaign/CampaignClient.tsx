@@ -295,7 +295,7 @@ function CampaignPageInner({ initialRegions, initialCurrentRegionId, pieceSet }:
                         >
                           {/* White King piece from the user's equipped piece set */}
                           <Image
-                            src={`/pieces/${pieceSet}/wK.svg`}
+                            src={`/Pieces/${pieceSet}/wK.svg`}
                             alt="Your position"
                             width={28} height={28}
                             className="drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] pointer-events-none"

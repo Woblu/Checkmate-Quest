@@ -430,7 +430,7 @@ export default function PlayGameClient({ gameId }: Props) {
                   isActive={!isUserTurn && !serverState.gameOver}
                   timeLeft={userColor === 'white' ? blackTimeSec : whiteTimeSec}
                   increment={increment}
-                  pieceSet={dbUser?.pieceSet}
+                  pieceSet={dbUser?.pieceSet || 'cardinal'}
                 />
               </div>
 
@@ -469,7 +469,7 @@ export default function PlayGameClient({ gameId }: Props) {
                   isActive={isUserTurn && !serverState.gameOver}
                   timeLeft={userColor === 'white' ? whiteTimeSec : blackTimeSec}
                   increment={increment}
-                  pieceSet={dbUser?.pieceSet}
+                  pieceSet={dbUser?.pieceSet || 'cardinal'}
                 />
               </div>
 

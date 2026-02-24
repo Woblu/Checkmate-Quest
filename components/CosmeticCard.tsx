@@ -98,7 +98,7 @@ export default function CosmeticCard({
       <div className="w-full h-32 bg-chess-bg rounded-lg border border-chess-border mb-4 flex items-center justify-center overflow-hidden">
         {cosmetic.type === 'PIECES' ? (
           <Image
-            src={`/pieces/${cosmetic.asset_url.toLowerCase()}/wQ.svg`}
+            src={`/Pieces/${cosmetic.asset_url.toLowerCase()}/wQ.svg`}
             alt={cosmetic.name}
             width={96} height={96}
             className="max-w-full max-h-full object-contain"

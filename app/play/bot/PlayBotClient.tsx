@@ -473,7 +473,7 @@ function PlayBotPageInner() {
                     if (chess.isInsufficientMaterial()) endGame('draw')
                     else endGame('win')
                   }}
-                  pieceSet={dbUser?.pieceSet || 'caliente'}
+                  pieceSet={dbUser?.pieceSet || 'cardinal'}
                 />
               </div>
 
@@ -508,7 +508,7 @@ function PlayBotPageInner() {
                     if (chess.isInsufficientMaterial()) endGame('draw')
                     else endGame('loss')
                   }}
-                  pieceSet={dbUser?.pieceSet || 'caliente'}
+                  pieceSet={dbUser?.pieceSet || 'cardinal'}
                 />
               </div>
 

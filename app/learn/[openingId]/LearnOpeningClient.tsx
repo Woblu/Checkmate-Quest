@@ -231,7 +231,7 @@ export default function LearnOpeningPage() {
                 position={fen}
                 onPieceDrop={onDrop}
                 arePiecesDraggable={!!(!lineCompleted && isUserTurn && !isOpponentMoving && lineData && currentMoveIndex < lineData.line.length)}
-                customPieces={getCustomPieces(dbUser?.pieceSet || 'caliente')}
+                customPieces={getCustomPieces(dbUser?.pieceSet || 'cardinal')}
                 customDarkSquareStyle={getCustomSquareStyles(dbUser?.boardStyle || 'canvas2').dark}
                 customLightSquareStyle={getCustomSquareStyles(dbUser?.boardStyle || 'canvas2').light}
                 customBoardStyle={{

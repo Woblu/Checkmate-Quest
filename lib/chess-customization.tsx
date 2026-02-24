@@ -5,14 +5,14 @@ import { CustomPieceFn } from 'react-chessboard/dist/chessboard/types'
 
 /**
  * Generate custom pieces mapping for a given piece set
- * @param pieceSet - The name of the piece set folder (e.g., "default", "classic", "modern")
+ * @param pieceSet - The name of the piece set folder in /public/Pieces/ (e.g., "cardinal", "pixel")
  */
-export function getCustomPieces(pieceSet: string = 'default'): { [key: string]: CustomPieceFn } {
+export function getCustomPieces(pieceSet: string = 'cardinal'): { [key: string]: CustomPieceFn } {
   const createPiece = (pieceName: string, alt: string): CustomPieceFn => {
     return ({ squareWidth }) => (
       <img
         style={{ width: squareWidth, height: squareWidth }}
-        src={`/pieces/${pieceSet}/${pieceName}.svg`}
+        src={`/Pieces/${pieceSet}/${pieceName}.svg`}
         alt={alt}
         onError={(e) => {
           // Fallback to default set if image not found
@@ -20,7 +20,7 @@ export function getCustomPieces(pieceSet: string = 'default'): { [key: string]: 
           // Prevent infinite loop - only try default if not already trying default
           if (!target.src.includes('/default/') && !target.dataset.fallback) {
             target.dataset.fallback = 'true'
-            target.src = `/pieces/default/${pieceName}.svg`
+            target.src = `/Pieces/cardinal/${pieceName}.svg`
           } else {
             // If default also fails, show a placeholder or hide
             target.style.opacity = '0.3'
@@ -80,6 +80,6 @@ export function getCustomSquareStyles(boardStyle: string = 'canvas2') {
 }
 
 // Default exports for backward compatibility (using first available set)
-export const customPieces = getCustomPieces('caliente')
+export const customPieces = getCustomPieces('cardinal')
 export const customDarkSquareStyle = getCustomSquareStyles('canvas2').dark
 export const customLightSquareStyle = getCustomSquareStyles('canvas2').light
