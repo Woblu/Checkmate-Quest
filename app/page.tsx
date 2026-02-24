@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { GiCrossedSwords, GiBookCover, GiPuzzle, GiOpenTreasureChest, GiWorld, GiTrophy } from 'react-icons/gi'
 import { assignDailyQuests } from '@/actions/quests'
 import { useDbUser } from '@/app/context/UserContext'
@@ -105,9 +106,9 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-chess-bg">
         <div className="bg-gradient-to-br from-pawn-gold to-pawn-gold-hover text-slate-900 py-20">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <div className="inline-block w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm">
-              <span className="text-6xl">♔</span>
+          <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
+            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm shrink-0">
+              <Image src="/rooklysmall.png" alt="" width={56} height={56} className="w-14 h-14 object-contain" />
             </div>
             <h1 className="text-5xl font-extrabold mb-4">
               Welcome to <span className="text-blue-600">Check</span><span className="text-orange-500">mate</span>
